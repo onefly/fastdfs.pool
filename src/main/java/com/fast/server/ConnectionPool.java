@@ -13,7 +13,7 @@ import org.csource.fastdfs.TrackerServer;
 
 /**
  * 具体连接池，对使用人员透明。
- * @author zhanghua
+ * @author caozf
  *
  */
 public class ConnectionPool {

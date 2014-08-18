@@ -7,7 +7,7 @@ import java.io.IOException;
  * 图片上传文件接口
  * 通常初始化方法： 通过构造ImageServerImpl
  * 注：本实例是线程安全，建议通过spring单例配置
- * @author zhanghua
+ * @author caozf
  *
  */
 public interface ImageServer {
