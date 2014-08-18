@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	
+<bean id="fastdfsPoolConfig" class="com.fast.pool.FastdfsPoolConfig">  
+    <property name="maxActive"  value="1000" />  
+    <property name="maxIdle" value="1000" />  
+    <property name="maxWait" value="10000" />  
+    <property name="testOnBorrow"  value="true"/> 
+    <property name="testOnReturn"  value="true"/>
+    <property name="testWhileIdle"  value="true"/>
+    </bean>
+    <bean id="fastdfsPool" class="com.fast.pool.FastdfsPool">  
+	    <constructor-arg index="0" ref="fastdfsPoolConfig" />
+	    <constructor-arg index="1" value="conf/fdfs_client.conf" type="java.lang.String" />  
+	</bean>
+</beans>

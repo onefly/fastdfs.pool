@@ -19,12 +19,14 @@ import org.csource.fastdfs.TrackerServer;
  * @CreateDate  : 2014年8月18日 下午1:10:48
  */
 public class FastdfsPool extends PoolAdapter {
+	private static  String confPath = "fdfs_client.conf";
 	public FastdfsPool(Config poolConfig, PoolableObjectFactory factory) {
 		super(poolConfig, factory);
 	}
 
-	public FastdfsPool(Config poolConfig) {
+	public FastdfsPool(Config poolConfig,String confPath) {
 		super(poolConfig, new FastdfsClientFactory());
+		this.confPath = confPath;
 	}
 
 	private static class FastdfsClientFactory extends BasePoolableObjectFactory {
@@ -32,7 +34,7 @@ public class FastdfsPool extends PoolAdapter {
 			String classPath = new File(getClass().getResource("/").getFile())
 					.getCanonicalPath();
 			String configFilePath = classPath + File.separator
-					+ "fdfs_client.conf";
+					+ confPath;
 			ClientGlobal.init(configFilePath);
 			TrackerClient tracker = new TrackerClient();
 			TrackerServer trackerServer = tracker.getConnection();
