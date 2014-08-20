@@ -18,8 +18,8 @@ public class TestPool {
 				e.printStackTrace();
 			}
 		}
-		Thread.sleep(10000);
-		for (int i = 0; i < 100; i++) {
+		//Thread.sleep(10000);
+		for (int i = 0; i < 10; i++) {
 			UploadThread run = new UploadThread(server);
 			Thread t = new Thread(run);
 			t.start();
