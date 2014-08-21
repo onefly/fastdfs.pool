@@ -11,18 +11,28 @@ import org.csource.fastdfs.TrackerServer;
 
 
 public class ImageServerImpl implements ImageServer {
-	private String connnectString;
-
+	/**
+	 * 跟踪服务器地址
+	 */
+	private String serverIp;
+	/**
+	 * 跟踪服务器访问端口
+	 */
 	private int port = 22133;
+	/**
+	 * 连接池大小
+	 */
 	private int size;
-
+	/**
+	 * 获取链接超时时间，单位秒
+	 */
 	private int waitTimes = 2;
 
 	private ConnectionPool pool = null;
 
 	/**
 	 * 
-	 * @param connnectString
+	 * @param serverIp
 	 *            域名地址或IP
 	 * @param port
 	 *            端口
@@ -32,13 +42,13 @@ public class ImageServerImpl implements ImageServer {
 	 *  默认心跳时间为半个小时。
 	 * @throws IOException 
 	 */
-	public ImageServerImpl(String connnectString, int port, int size) throws IOException {
-		this(connnectString, port, size, 60*30);
+	public ImageServerImpl(String serverIp, int port, int size) throws IOException {
+		this(serverIp, port, size, 60*30);
 	}
 	
 	/**
 	 * 
-	 * @param connnectString
+	 * @param serverIp
 	 *            域名地址或IP
 	 * @param port
 	 *            端口
@@ -49,33 +59,33 @@ public class ImageServerImpl implements ImageServer {
 	 *      心跳时间 。单位为秒
 	 * @throws IOException 
 	 */
-	public ImageServerImpl(String connnectString, int port, int size,int heartBeatTime) throws IOException {
-		this.connnectString = connnectString;
+	public ImageServerImpl(String serverIp, int port, int size,int heartBeatTime) throws IOException {
+		this.serverIp = serverIp;
 		this.port = port;
 		this.size = size;
-		pool = new ConnectionPool(connnectString, port, this.size,heartBeatTime);
+		pool = new ConnectionPool(serverIp, port, this.size,heartBeatTime);
 	}
 
 	/**
 	 * 
-	 * @param connnectString
+	 * @param serverIp
 	 *            域名地址或IP
 	 * @param port
 	 *            端口
 	 * @throws IOException 
 	 */
-	public ImageServerImpl(String connnectString, int port) throws IOException {
-		this(connnectString, port, 2);
+	public ImageServerImpl(String serverIp, int port) throws IOException {
+		this(serverIp, port, 2);
 	}
 
 	/**
 	 * 
-	 * @param connnectString
+	 * @param serverIp
 	 *            域名地址或IP 端口默认
 	 * @throws IOException 
 	 */
-	public ImageServerImpl(String connnectString) throws IOException {
-		this(connnectString, 22122);
+	public ImageServerImpl(String serverIp) throws IOException {
+		this(serverIp, 22122);
 	}
 
 	public String uploadFile(File file) throws IOException, Exception {
@@ -161,8 +171,8 @@ public class ImageServerImpl implements ImageServer {
 	}
 
 	@Override
-	public String getConnnectString() {
-		return connnectString;
+	public String getServerIp() {
+		return serverIp;
 	}
 
 	@Override

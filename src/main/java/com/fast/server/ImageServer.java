@@ -41,7 +41,7 @@ public interface ImageServer {
 	 * 得到域名或IP
 	 * @return
 	 */
-	public String getConnnectString() ;
+	public String getServerIp() ;
 	/**
 	 * 得到连接端口
 	 * @return
