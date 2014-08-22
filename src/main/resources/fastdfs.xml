@@ -18,12 +18,12 @@
 			type="java.lang.String" />
 	</bean>
 
-	<bean id="imageServer" class="com.fast.server.ImageServerImpl">
+	<bean id="imageServer" class="com.fast.server.ImageServerImpl" scope="singleton">
 		<!-- serverIp -->
 		<constructor-arg index="0" value="192.168.6.110" type="java.lang.String" />
 		<!-- port -->
 		<constructor-arg index="1" value="22122" type="int" />
-		<!-- size -->
+		<!-- pool size -->
 		<constructor-arg index="2" value="500" type="int" />
 	</bean>
 </beans>
