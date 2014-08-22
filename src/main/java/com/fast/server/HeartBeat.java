@@ -7,7 +7,14 @@ import java.util.TimerTask;
 import org.csource.fastdfs.TrackerServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+/**
+ * 心跳包实现类
+ * @Project 	: fastdfs.pool
+ * @Program Name: com.fast.server.HeartBeat.java
+ * @ClassName	: HeartBeat 
+ * @Author 		: caozhifei 
+ * @CreateDate  : 2014年8月22日 上午10:14:09
+ */
 class HeartBeat {
 	private static final Logger log = LoggerFactory.getLogger(HeartBeat.class);
 	private ConnectionPool pool = null;

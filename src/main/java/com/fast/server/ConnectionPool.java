@@ -14,10 +14,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * 具体连接池，对使用人员透明。
- * 
- * @author caozf
- * 
+ * 连接池实现类
+ * @Project 	: fastdfs.pool
+ * @Program Name: com.fast.server.ConnectionPool.java
+ * @ClassName	: ConnectionPool 
+ * @Author 		: caozhifei 
+ * @CreateDate  : 2014年8月22日 上午10:13:51
  */
 public class ConnectionPool {
 	private static final Logger log = LoggerFactory
