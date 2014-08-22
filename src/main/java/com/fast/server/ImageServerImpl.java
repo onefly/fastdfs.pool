@@ -8,9 +8,12 @@ import java.io.IOException;
 import org.csource.fastdfs.StorageClient1;
 import org.csource.fastdfs.StorageServer;
 import org.csource.fastdfs.TrackerServer;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ImageServerImpl implements ImageServer {
+	private static final Logger log = LoggerFactory
+			.getLogger(ImageServerImpl.class);
 	/**
 	 * 跟踪服务器地址
 	 */
@@ -26,7 +29,7 @@ public class ImageServerImpl implements ImageServer {
 	/**
 	 * 获取链接超时时间，单位秒
 	 */
-	private int waitTimes = 2;
+	private int waitTimes = 5;
 
 	private ConnectionPool pool = null;
 
@@ -38,32 +41,13 @@ public class ImageServerImpl implements ImageServer {
 	 *            端口
 	 * @param size
 	 *            连接池大小
-	 *            
-	 *  默认心跳时间为半个小时。
-	 * @throws IOException 
-	 */
-	public ImageServerImpl(String serverIp, int port, int size) throws IOException {
-		this(serverIp, port, size, 60*30);
-	}
-	
-	/**
 	 * 
-	 * @param serverIp
-	 *            域名地址或IP
-	 * @param port
-	 *            端口
-	 * @param size
-	 *            连接池大小
-	 *            
-	 * @param heartBeatTime
-	 *      心跳时间 。单位为秒
-	 * @throws IOException 
+	 *            默认心跳时间为半个小时。
+	 * @throws IOException
 	 */
-	public ImageServerImpl(String serverIp, int port, int size,int heartBeatTime) throws IOException {
-		this.serverIp = serverIp;
-		this.port = port;
-		this.size = size;
-		pool = new ConnectionPool(serverIp, port, this.size,heartBeatTime);
+	public ImageServerImpl(String serverIp, int port, int size)
+			throws IOException {
+		this(serverIp, port, size, 60 * 30);
 	}
 
 	/**
@@ -72,7 +56,28 @@ public class ImageServerImpl implements ImageServer {
 	 *            域名地址或IP
 	 * @param port
 	 *            端口
-	 * @throws IOException 
+	 * @param size
+	 *            连接池大小
+	 * 
+	 * @param heartBeatTime
+	 *            心跳时间 。单位为秒
+	 * @throws IOException
+	 */
+	public ImageServerImpl(String serverIp, int port, int size,
+			int heartBeatTime) throws IOException {
+		this.serverIp = serverIp;
+		this.port = port;
+		this.size = size;
+		pool = new ConnectionPool(serverIp, port, this.size, heartBeatTime);
+	}
+
+	/**
+	 * 
+	 * @param serverIp
+	 *            域名地址或IP
+	 * @param port
+	 *            端口
+	 * @throws IOException
 	 */
 	public ImageServerImpl(String serverIp, int port) throws IOException {
 		this(serverIp, port, 2);
@@ -82,14 +87,14 @@ public class ImageServerImpl implements ImageServer {
 	 * 
 	 * @param serverIp
 	 *            域名地址或IP 端口默认
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	public ImageServerImpl(String serverIp) throws IOException {
 		this(serverIp, 22122);
 	}
 
 	public String uploadFile(File file) throws IOException, Exception {
-		if(file==null){
+		if (file == null) {
 			return null;
 		}
 		return uploadFile(file, getFileExtName(file.getName()));
@@ -97,7 +102,7 @@ public class ImageServerImpl implements ImageServer {
 
 	public String uploadFile(File file, String suffix) throws IOException,
 			Exception {
-		if(file==null){
+		if (file == null) {
 			return null;
 		}
 		byte[] fileBuff = getFileBuffer(file);
@@ -112,7 +117,7 @@ public class ImageServerImpl implements ImageServer {
 	private String send(byte[] fileBuff, String fileExtName)
 			throws IOException, Exception {
 		String upPath = null;
-		if(fileBuff==null){
+		if (fileBuff == null) {
 			return null;
 		}
 		TrackerServer trackerServer = null;
@@ -125,14 +130,14 @@ public class ImageServerImpl implements ImageServer {
 			pool.checkin(trackerServer);
 		} catch (InterruptedException e) {
 			// 确实没有空闲连接,并不需要删除与fastdfs连接
-			ImageServerPoolSysout.warn("ImageServerImpl execution send throw :"+e);
+			log.error("ImageServerImpl execution send throw :", e);
 			throw e;
 		} catch (NullPointerException e) {
-			ImageServerPoolSysout.warn("ImageServerImpl execution send throw :"+e);
+			log.error("ImageServerImpl execution send throw :", e);
 			throw e;
 		} catch (Exception e) {
 			// 发生io异常等其它异常，默认删除这次连接重新申请
-			ImageServerPoolSysout.warn("ImageServerImpl execution send throw :"+e);
+			log.error("ImageServerImpl execution send throw :", e);
 			pool.drop(trackerServer);
 			throw e;
 		}
@@ -149,22 +154,22 @@ public class ImageServerImpl implements ImageServer {
 
 	private byte[] getFileBuffer(File file) {
 		byte[] fileByte = null;
-		FileInputStream fis=null;
+		FileInputStream fis = null;
 		try {
 			fis = new FileInputStream(file);
 			fileByte = new byte[fis.available()];
 			fis.read(fileByte);
 		} catch (FileNotFoundException e) {
-			ImageServerPoolSysout.warn("ImageServerImpl read file  throw :"+e);
+			log.error("ImageServerImpl  read file   throw :", e);
 		} catch (IOException e) {
-			ImageServerPoolSysout.warn("ImageServerImpl read file  throw :"+e);
-		}finally{
+			log.error("ImageServerImpl  read file   throw :", e);
+		} finally {
 			try {
-				if(fis!=null){
+				if (fis != null) {
 					fis.close();
 				}
 			} catch (IOException e) {
-				fis=null;
+				fis = null;
 			}
 		}
 		return fileByte;
@@ -194,24 +199,25 @@ public class ImageServerImpl implements ImageServer {
 
 	@Override
 	public boolean deleteFile(String fileId) throws IOException, Exception {
-		boolean result=false;
-		TrackerServer trackerServer =null;
+		boolean result = false;
+		TrackerServer trackerServer = null;
 		try {
 			trackerServer = pool.checkout(waitTimes);
 			StorageServer storageServer = null;
-			StorageClient1 client1 = new StorageClient1(trackerServer, storageServer);
-			result=client1.delete_file1(fileId)==0?true:false;
+			StorageClient1 client1 = new StorageClient1(trackerServer,
+					storageServer);
+			result = client1.delete_file1(fileId) == 0 ? true : false;
 			pool.checkin(trackerServer);
 		} catch (InterruptedException e) {
 			// 确实没有空闲连接,并不需要删除与fastdfs连接
-			ImageServerPoolSysout.warn("ImageServerImpl execution deleteFile throw :"+e);
+			log.error("ImageServerImpl execution deleteFile throw:", e);
 			throw e;
 		} catch (NullPointerException e) {
-			ImageServerPoolSysout.warn("ImageServerImpl execution deleteFile throw :"+e);
+			log.error("ImageServerImpl execution deleteFile throw:", e);
 			throw e;
 		} catch (Exception e) {
 			// 发生io异常等其它异常，默认删除这次连接重新申请
-			ImageServerPoolSysout.warn("ImageServerImpl execution deleteFile throw :"+e);
+			log.error("ImageServerImpl execution deleteFile throw:", e);
 			e.printStackTrace();
 			pool.drop(trackerServer);
 			throw e;
@@ -220,25 +226,26 @@ public class ImageServerImpl implements ImageServer {
 	}
 
 	@Override
-	public byte[] getFileByID(String fileId)throws IOException,Exception{
-		byte[] result=null;
-		TrackerServer trackerServer =null;
+	public byte[] getFileByID(String fileId) throws IOException, Exception {
+		byte[] result = null;
+		TrackerServer trackerServer = null;
 		try {
 			trackerServer = pool.checkout(waitTimes);
 			StorageServer storageServer = null;
-			StorageClient1 client1 = new StorageClient1(trackerServer, storageServer);
-			result=client1.download_file1(fileId);
+			StorageClient1 client1 = new StorageClient1(trackerServer,
+					storageServer);
+			result = client1.download_file1(fileId);
 			pool.checkin(trackerServer);
 		} catch (InterruptedException e) {
 			// 确实没有空闲连接,并不需要删除与fastdfs连接
-			ImageServerPoolSysout.warn("ImageServerImpl execution getFileByID throw :"+e);
+			log.error("ImageServerImpl execution getFileByID throw :", e);
 			throw e;
 		} catch (NullPointerException e) {
-			ImageServerPoolSysout.warn("ImageServerImpl execution getFileByID throw :"+e);
+			log.error("ImageServerImpl execution getFileByID throw :", e);
 			throw e;
 		} catch (Exception e) {
 			// 发生io异常等其它异常，默认删除这次连接重新申请
-			ImageServerPoolSysout.warn("ImageServerImpl execution getFileByID throw :"+e);
+			log.error("ImageServerImpl execution getFileByID throw :", e);
 			e.printStackTrace();
 			pool.drop(trackerServer);
 			throw e;

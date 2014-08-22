@@ -5,9 +5,9 @@
 
 
 	<bean id="fastdfsPoolConfig" class="com.fast.pool.FastdfsPoolConfig">
-		<property name="maxActive" value="1000" />
+		<property name="maxActive" value="500" />
 		<property name="maxIdle" value="1000" />
-		<property name="maxWait" value="10000" />
+		<property name="maxWait" value="5000" />
 		<property name="testOnBorrow" value="true" />
 		<property name="testOnReturn" value="true" />
 		<property name="testWhileIdle" value="true" />
@@ -16,5 +16,14 @@
 		<constructor-arg index="0" ref="fastdfsPoolConfig" />
 		<constructor-arg index="1" value="conf/fdfs_client.conf"
 			type="java.lang.String" />
+	</bean>
+
+	<bean id="imageServer" class="com.fast.server.ImageServerImpl">
+		<!-- serverIp -->
+		<constructor-arg index="0" value="192.168.6.110" type="java.lang.String" />
+		<!-- port -->
+		<constructor-arg index="1" value="22122" type="int" />
+		<!-- size -->
+		<constructor-arg index="2" value="500" type="int" />
 	</bean>
 </beans>
